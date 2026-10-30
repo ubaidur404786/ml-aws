@@ -1,0 +1,73 @@
+:root {
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --text: #1f2933;
+  --muted: #616e7c;
+  --border: #d9dee5;
+  --primary: #2563eb;
+  --high: #dc2626;
+  --low: #16a34a;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+
+.page { max-width: 1100px; margin: 0 auto; padding: 32px 16px; }
+header h1 { margin: 0 0 4px; font-size: 1.8rem; }
+header p { margin: 0 0 24px; color: var(--muted); }
+footer { margin-top: 24px; font-size: 0.85rem; color: var(--muted); }
+
+/* Form on the left, result on the right; stacked on small screens */
+.layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start; }
+@media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+}
+.card h2 { margin: 0 0 12px; font-size: 1.15rem; }
+.card-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.presets { display: flex; gap: 12px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; margin: 8px 0 20px; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: var(--muted); }
+input, select {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: #fff;
+}
+input.invalid { border-color: var(--high); }
+.field-error { color: var(--high); font-size: 0.8rem; }
+
+button { font: inherit; cursor: pointer; }
+button.primary {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+button.primary:disabled { opacity: 0.6; cursor: wait; }
+button.link { border: none; background: none; color: var(--primary); padding: 0; font-size: 0.9rem; }
+
+.result.muted { color: var(--muted); }
+.label { font-size: 1.4rem; font-weight: 700; margin: 0 0 12px; }
+.label.high { color: var(--high); }
+.label.low { color: var(--low); }
+.probability { margin: 0 0 8px; }
+.bar { height: 12px; background: #e5e9ef; border-radius: 6px; overflow: hidden; }
+.bar-fill { height: 100%; transition: width 0.4s; }
+.bar-fill.high { background: var(--high); }
+.bar-fill.low { background: var(--low); }
+.hint { font-size: 0.8rem; color: var(--muted); margin-top: 14px; }
+.error { color: var(--high); }

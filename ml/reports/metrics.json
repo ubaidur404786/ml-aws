@@ -1,0 +1,41 @@
+{
+  "selected_model": "LogisticRegression",
+  "models": {
+    "LogisticRegression": {
+      "accuracy": 0.7381,
+      "precision": 0.5043,
+      "recall": 0.7834,
+      "f1": 0.6136,
+      "roc_auc": 0.8413,
+      "confusion_matrix": [
+        [
+          747,
+          288
+        ],
+        [
+          81,
+          293
+        ]
+      ],
+      "cv_roc_auc_mean": 0.8453
+    },
+    "RandomForest": {
+      "accuracy": 0.7665,
+      "precision": 0.5429,
+      "recall": 0.762,
+      "f1": 0.634,
+      "roc_auc": 0.8413,
+      "confusion_matrix": [
+        [
+          795,
+          240
+        ],
+        [
+          89,
+          285
+        ]
+      ],
+      "cv_roc_auc_mean": 0.8474
+    }
+  }
+}

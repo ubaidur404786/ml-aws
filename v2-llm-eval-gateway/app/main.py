@@ -4,7 +4,7 @@ import time
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-from app import config, llm, rag
+from app import config, rag
 
 app = FastAPI(title="LLM Eval & Gateway")
 
@@ -20,16 +20,14 @@ def health() -> dict:
 
 
 # Example: POST /ask {"question": "What is the refund window?"}
-#   -> {"answer": "[MOCK] ...30 days...", "sources": ["policy.pdf p.2", ...], "model": "amazon.nova-micro-v1:0", ...}
+#   -> {"answer": "Within 30 days...", "sources": ["refund_policy.pdf p.1", ...], "model": "amazon.nova-micro-v1:0", ...}
 @app.post("/ask")
 def ask(request: AskRequest) -> dict:
     start = time.perf_counter()
-    chunks = rag.retrieve(request.question, k=2)
-    prompt = rag.build_prompt(request.question, chunks)
-    result = llm.generate(prompt, config.ACTIVE_MODEL)
+    result = rag.answer_question(request.question, config.ACTIVE_MODEL)
     return {
         "answer": result["answer"],
-        "sources": [chunk["source"] for chunk in chunks],
+        "sources": result["sources"],
         "model": config.ACTIVE_MODEL,
         "mode": config.LLM_MODE,
         "latency_ms": round((time.perf_counter() - start) * 1000),

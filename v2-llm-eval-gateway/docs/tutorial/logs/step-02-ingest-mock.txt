@@ -1,0 +1,1 @@
+Indexed 6 chunks from ./data\docs (mock embeddings) -> ./index

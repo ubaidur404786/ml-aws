@@ -3,3 +3,9 @@ uvicorn==0.34.0
 pydantic==2.10.4
 httpx==0.28.1
 pytest==8.3.4
+boto3[crt]==1.43.123  # [crt] lets boto3 use "aws login" credentials
+faiss-cpu==1.9.0.post1
+numpy==1.26.4
+pypdf==5.1.0
+# only used by scripts/make_sample_pdfs.py to create the sample documents
+fpdf2==2.8.2

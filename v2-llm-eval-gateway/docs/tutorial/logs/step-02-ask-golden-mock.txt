@@ -1,0 +1,12 @@
+#1 [easy] How many days do I have to ask for a refund?
+   answer:   [MOCK] Based on the context: Exceptions and processing Digital items (e-books, software licences) cannot be refunded once they have been downloaded. Approved refunds are paid back to the original payment method within 5 to 7 busi
+   expected: Refunds are accepted within 30 days of purchase, with a receipt or order number.
+   sources:  refund_policy.pdf p.2, refund_policy.pdf p.1, shipping_guide.pdf p.2  (expected: refund_policy.pdf p.1)
+   tokens:   134 in / 36 out
+
+#2 [easy] How long does it take to get my money back after a refund is approved?
+   answer:   [MOCK] Based on the context: Exceptions and processing Digital items (e-books, software licences) cannot be refunded once they have been downloaded. Approved refunds are paid back to the original payment method within 5 to 7 busi
+   expected: 5 to 7 business days, to the original payment method.
+   sources:  refund_policy.pdf p.2, refund_policy.pdf p.1, support_handbook.pdf p.1  (expected: refund_policy.pdf p.2)
+   tokens:   135 in / 36 out
+

@@ -52,6 +52,17 @@ flowchart LR
     R --> P[✅ admin picks active model]
 ```
 
+## 📝 Golden dataset
+
+`data/golden.jsonl` has 10 sample rows (5 easy, 3 multi-step, 2 unanswerable). They are based on 3 small sample PDFs in `data/docs/` about a made-up shop. The PDFs were written for this project and are created by `scripts/make_sample_pdfs.py`.
+
+```json
+{"id": 3, "question": "How long does standard shipping take?", "expected_answer": "3 to 5 business days.", "source": "shipping_guide.pdf p.1", "type": "easy"}
+```
+
+To use your own PDFs, put them in `data/docs/` and run `python scripts/draft_golden.py`. It writes **drafts** to `data/golden_draft.jsonl`.
+> ⚠️ **I review every row by hand** (question, expected answer, source, type) before copying it into `golden.jsonl`. The model's drafts are never used without that check.
+
 ## 📡 API examples
 
 **POST /ask**
@@ -96,6 +107,8 @@ flowchart LR
 | `terraform/` | AWS infrastructure (S3, ECR, IAM, Lambda, budget), one file per concern |
 | `tests/` | pytest tests |
 | `.github/workflows/` | CI/CD with the evaluation gate |
+| `scripts/` | Helpers: make sample PDFs, draft golden rows, ask golden questions |
+| `docs/tutorial/` | Step-by-step build tutorial with commands, outputs and screenshots |
 
 ## 🚀 Step-by-step commands
 

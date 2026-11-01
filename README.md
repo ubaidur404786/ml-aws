@@ -4,6 +4,8 @@ Predicts whether a telecom customer is likely to leave (churn). Model served by 
 
 **Dataset → scikit-learn → FastAPI → React → Docker → Docker Hub → AWS EC2 → Terraform**
 
+> **v2:** [LLM Eval & Gateway on AWS](v2-llm-eval-gateway/README.md): compare Bedrock LLMs with RAG, an LLM judge and an admin dashboard (in progress).
+
 <p align="center">
   <img src="docs/screenshots/prediction-churn.png" alt="Churn prediction web app" width="85%">
 </p>

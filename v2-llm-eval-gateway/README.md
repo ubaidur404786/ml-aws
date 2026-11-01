@@ -4,6 +4,43 @@
 
 > v2 of this repo. v1 (customer churn ML on EC2) is in the [repo root README](../README.md).
 
+## 🚦 Project status
+
+| # | Step | Status |
+|---|---|---|
+| 1 | Skeleton + mock mode | ✅ done |
+| 2 | RAG (PDF → Titan → FAISS) + golden set | 🟡 works in mock mode; real Bedrock waits for AWS account access |
+| 3 | Evaluation, LLM judge, report, human agreement | 🟡 works in mock mode |
+| 4 | Admin dashboard + client chat (React) | 🟡 works in mock mode |
+| 5 | Docker + Terraform deploy (Lambda, ECR, S3, budgets) | ⏳ next |
+| 6 | GitHub Actions with eval gate | ⏳ planned |
+
+> Every screenshot and number below comes from **mock mode** (`LLM_MODE=mock`): fake answers, free, no AWS. Real Bedrock results replace them once the account is authorized.
+
+## 🖼️ Screenshots (mock mode)
+
+**Client chat**: answers only from the documents, with the source page and the model that answered.
+
+![Client chat with answers](docs/tutorial/screenshots/step-04-react-chat-answers.jpg)
+
+<details><summary>Empty chat with starter questions</summary>
+
+![Client chat empty](docs/tutorial/screenshots/step-04-react-chat-empty.jpg)
+</details>
+
+**Admin dashboard**: leaderboard, quality vs cost, response time, settings and limits.
+
+![Admin overview](docs/tutorial/screenshots/step-04-react-admin-overview.jpg)
+
+**Admin question results**: every judged answer with the judge's reason.
+
+![Admin question results](docs/tutorial/screenshots/step-04-react-admin-questions.jpg)
+
+<details><summary>Admin sign-in</summary>
+
+![Admin login](docs/tutorial/screenshots/step-04-react-admin-login.jpg)
+</details>
+
 ## ⏱️ How it works in 30 seconds
 
 1. 📄 Your PDFs are split into chunks, embedded with Titan, and stored in a FAISS index.
@@ -36,6 +73,49 @@ flowchart LR
     A[🛠️ Admin dashboard] -->|run eval, pick model, limits| L
     L -->|answer + sources| C
 ```
+
+### 🧭 The whole flow, end to end
+
+```
+ ① BUILD THE KNOWLEDGE (once, offline)
+ 📄 PDFs ──▶ ✂️ pypdf chunks ──▶ 🔢 Titan v2 embeddings (512-d) ──▶ 🗂️ FAISS index ──▶ 🪣 S3
+
+ ② EVALUATE THE MODELS (admin, before go-live)
+ 📝 golden.jsonl ──▶ for each candidate model (Nova Micro / Lite / Pro):
+        same RAG: top-k chunks ──▶ prompt "answer only from context, else I don't know"
+        record answer · ⏱️ latency · 🔤 tokens · 💲 cost
+   ──▶ ⚖️ judge model (NOT a candidate) scores 1-5: correctness · faithfulness · refusal
+   ──▶ ✔️ simple checks (right source, length) + 👤 human check on 20 answers (agreement %)
+   ──▶ 📊 report: leaderboard, p50/p95 latency, $/1000 questions, charts
+   ──▶ ⭐ recommended = cheapest + fastest with correctness ≥ 85% and refusal ≥ 90%
+
+ ③ ADMIN DECIDES (/admin, password)
+ 🛠️ dashboard ──▶ picks active model · allowed models · max_tokens · daily question limit
+            ──▶ saved as settings.json in 🪣 S3
+
+ ④ CLIENT ASKS (/)
+ 👤 question ──▶ ⚡ Lambda Function URL (FastAPI)
+            ──▶ check daily limit (429 if reached)
+            ──▶ 🔢 embed question ──▶ 🗂️ FAISS top-k ──▶ 🧠 Bedrock active model
+            ──▶ 💬 answer + 📎 source pages + model name ──▶ usage + cost logged to 🪣 S3
+
+ ⑤ SHIP CHANGES (GitHub Actions, OIDC, main only)
+ 🔀 push ──▶ 🧪 pytest ──▶ 🐳 build image ──▶ 📦 ECR ──▶ ⚡ update Lambda
+        ──▶ 🚦 30-question eval gate: build FAILS if scores drop
+```
+
+**Where each piece runs on AWS**
+
+| Piece | AWS service | Why |
+|---|---|---|
+| React chat + dashboard | S3 static website | Plain files, cents per month |
+| FastAPI + RAG | Lambda (container image from ECR) + Function URL | Pay per request, no server, no load balancer |
+| LLMs + embeddings | Bedrock (Nova models, Titan Text Embeddings v2) | Pay per token, no GPU |
+| FAISS index, settings, eval results, usage | S3 (small files) | No database needed |
+| Cost safety | AWS Budgets at $5 / $20 / $50 | Email alerts before costs grow |
+| Infrastructure | Terraform (every resource tagged `Project=llm-eval-gateway`) | Create and destroy with one command |
+
+Locally the same code runs with `uvicorn`, JSON files in `storage/` instead of S3, and `LLM_MODE=mock` for free testing.
 
 ### 🔁 Evaluation flow
 
@@ -104,9 +184,10 @@ To use your own PDFs, put them in `data/docs/` and run `python scripts/draft_gol
 | `data/` | `golden.jsonl` and `docs/` (sample PDFs) |
 | `eval/` | Scripts that run models, judge answers, and build reports |
 | `frontend/` | React (Vite) app with two pages: client chat and admin dashboard |
-| `terraform/` | AWS infrastructure (S3, ECR, IAM, Lambda, budget), one file per concern |
-| `tests/` | pytest tests |
-| `.github/workflows/` | CI/CD with the evaluation gate |
+| `terraform/` | AWS infrastructure (S3, ECR, IAM, Lambda, budget), one file per concern *(Step 5)* |
+| `tests/` | pytest tests (21 passing) |
+| `storage/`, `index/` | Local JSON settings/usage/eval results and the FAISS index (git-ignored, created at run time) |
+| `../.github/workflows/` | CI/CD with the evaluation gate *(Step 6)* |
 | `scripts/` | Helpers: make sample PDFs, draft golden rows, ask golden questions |
 | `docs/tutorial/` | Step-by-step build tutorial with commands, outputs and screenshots |
 

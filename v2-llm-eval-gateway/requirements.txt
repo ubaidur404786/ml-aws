@@ -9,3 +9,5 @@ numpy==1.26.4
 pypdf==5.1.0
 # only used by scripts/make_sample_pdfs.py to create the sample documents
 fpdf2==2.8.2
+matplotlib==3.9.4  # PNG charts in eval/report.py
+python-dotenv==1.0.1  # reads the .env file

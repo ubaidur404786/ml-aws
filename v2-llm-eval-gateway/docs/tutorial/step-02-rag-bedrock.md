@@ -89,6 +89,25 @@ python scripts/ask_golden.py
 | `NoCredentialsError: Unable to locate credentials` | `aws login` is new; boto3 1.35 cannot read its credentials | Upgrade to `boto3==1.43.123` |
 | `MissingDependencyException: ... pip install "botocore[crt]"` | The `aws login` credential provider needs the CRT add-on | Use `boto3[crt]==1.43.123` in `requirements.txt` |
 | `AccessDeniedException: Your account is currently being verified` | A brand-new AWS account cannot call Bedrock until AWS verifies it (usually < 2 hours) | Wait, then re-run step 5. Nothing was charged. |
+| `The token '&&' is not a valid statement separator` | Windows PowerShell 5.1 has no `&&` | Run the commands one per line |
+| `ValidationException: Operation not allowed` and `get-foundation-model-availability` shows `"authorizationStatus": "NOT_AUTHORIZED"` | The account is not yet authorized for Bedrock (verification still in progress) | Wait for verification. If it persists, open a free support case under **Account and billing → Account** asking to enable Amazon Bedrock |
+
+| Console Playground: `not authorized to perform: bedrock:GetUseCaseForModelAccess with an explicit deny in a service control policy` + "Page restricted, return to Europe (Stockholm)" | The AWS account is a member of an AWS Organization whose **Service Control Policy (SCP)** blocks Bedrock and allows only eu-north-1. An SCP overrides every permission inside the account. | Cannot be fixed from inside the account. Ask the organization admin to allow Bedrock, or use a standalone AWS account. |
+
+### How the support case was opened (2026-10-31)
+
+The Support Center UI changed: the first page is now an AI chat box ("Hi. How can we help?").
+
+1. Console → **Support Center** → type the problem into the chat box → send.
+2. The AI answered "unable to offer a recommendation", so click **Create a case**.
+3. Fill in: **Subject** "Amazon Bedrock NOT_AUTHORIZED on Free plan account - please enable model access", **Case type** Account and billing, **Service** Account, **Category** Other Account Issues, **Severity** General question, **Contact** Web.
+4. **Submit**. Basic support is free; reply within 24 hours by email.
+
+Check authorization with:
+```bash
+aws bedrock get-foundation-model-availability --region us-east-1 --model-id amazon.titan-embed-text-v2:0
+```
+Ready when it shows `"authorizationStatus": "AUTHORIZED"`.
 
 ### Real output
 

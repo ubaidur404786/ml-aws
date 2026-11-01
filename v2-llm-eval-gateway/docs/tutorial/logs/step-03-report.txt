@@ -1,0 +1,9 @@
+| Model | Correctness | Faithfulness | Refusal | Right source | p50 ms | p95 ms | $ / 1000 questions |
+|---|---|---|---|---|---|---|---|
+| amazon.nova-micro-v1:0 | 50.0% | 4.4 | 100.0% | 100.0% | 0 | 304 | $0.0072 |
+| amazon.nova-lite-v1:0 | 50.0% | 4.4 | 100.0% | 100.0% | 0 | 1 | $0.0124 |
+| amazon.nova-pro-v1:0 | 50.0% | 4.4 | 100.0% | 100.0% | 0 | 0 | $0.1655 |
+
+Recommended: **none (no model passes the thresholds)**
+
+Wrote leaderboard.csv, leaderboard.md, quality_vs_cost.png, latency.png to .\eval\results

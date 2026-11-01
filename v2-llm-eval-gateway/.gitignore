@@ -9,3 +9,6 @@ terraform/*.tfstate*
 terraform/terraform.tfvars
 index/
 data/golden_draft.jsonl
+storage/
+frontend/node_modules/
+frontend/dist/

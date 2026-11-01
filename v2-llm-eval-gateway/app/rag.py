@@ -42,7 +42,7 @@ def build_prompt(question: str, chunks: list[dict]) -> str:
 # Example: answer_question("What is the refund window?", "amazon.nova-micro-v1:0")
 #   -> {"answer": "Within 30 days with a receipt.", "sources": ["refund_policy.pdf p.1", ...],
 #       "input_tokens": 230, "output_tokens": 9}
-def answer_question(question: str, model_id: str, k: int = 3) -> dict:
+def answer_question(question: str, model_id: str, max_tokens: int = 300, k: int = 3) -> dict:
     chunks = retrieve(question, k)
-    result = llm.generate(build_prompt(question, chunks), model_id)
+    result = llm.generate(build_prompt(question, chunks), model_id, max_tokens)
     return {**result, "sources": [chunk["source"] for chunk in chunks]}

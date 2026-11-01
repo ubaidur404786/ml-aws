@@ -81,7 +81,7 @@ To use your own PDFs, put them in `data/docs/` and run `python scripts/draft_gol
 }
 ```
 
-**POST /admin/eval** *(added in Step 4)*
+**POST /admin/eval**
 ```json
 // request (header: X-Admin-Password)
 {"models": ["amazon.nova-micro-v1:0", "amazon.nova-lite-v1:0"], "sample_size": 5}
@@ -103,7 +103,7 @@ To use your own PDFs, put them in `data/docs/` and run `python scripts/draft_gol
 | `app/` | FastAPI backend: config, RAG retrieval, LLM calls |
 | `data/` | `golden.jsonl` and `docs/` (sample PDFs) |
 | `eval/` | Scripts that run models, judge answers, and build reports |
-| `frontend/` | Two plain HTML pages: client chat and admin dashboard |
+| `frontend/` | React (Vite) app with two pages: client chat and admin dashboard |
 | `terraform/` | AWS infrastructure (S3, ECR, IAM, Lambda, budget), one file per concern |
 | `tests/` | pytest tests |
 | `.github/workflows/` | CI/CD with the evaluation gate |
@@ -121,6 +121,20 @@ pip install -r requirements.txt
 copy .env.example .env
 ```
 Linux/macOS: `source .venv/bin/activate` and `cp .env.example .env`.
+
+**1b. Build the React frontend (needs Node.js 20+)**
+```bash
+cd frontend
+```
+```bash
+npm install
+```
+```bash
+npm run build
+```
+```bash
+cd ..
+```
 
 **2. Run in mock mode (free, no AWS)**
 ```bash
@@ -146,12 +160,12 @@ uvicorn app.main:app --reload
 python -m app.ingest
 ```
 
-**6. Run evaluation** *(Step 3)*
+**6. Run evaluation** *(all models, then judge, then report)*
 ```bash
-python -m eval.run_models
+python -m eval.run_eval --sample 5
 ```
 
-**7. Open dashboard** *(Step 4)*
+**7. Open dashboard** *(password = ADMIN_PASSWORD in .env)*
 ```
 http://localhost:8000/admin
 ```

@@ -2,12 +2,15 @@
 from app import config
 
 
-# Example: mock_generate("...Context:\n[refund_policy.pdf p.1] Refunds within 30 days...")
+# Example: mock_generate("...Context:\n[refund_policy.pdf p.1] Refunds within 30 days...\n\nQuestion: Refund window?")
 #   -> {"answer": "[MOCK] Based on the context: Refunds within 30 days...", "input_tokens": 42, "output_tokens": 12}
+#   A question that shares fewer than 2 words with the top chunk gets "[MOCK] I don't know".
 def mock_generate(prompt: str) -> dict:
     context_lines = [line for line in prompt.splitlines() if line.startswith("[")]
-    first_fact = context_lines[0].split("] ", 1)[1][:200] if context_lines else "I don't know."
-    answer = f"[MOCK] Based on the context: {first_fact}"
+    question = prompt.rsplit("Question:", 1)[-1].lower().replace("?", "").split()
+    first_fact = context_lines[0].split("] ", 1)[1][:200] if context_lines else ""
+    shared_words = set(question) & set(first_fact.lower().split()) - {"the", "a", "is", "to", "i", "do", "of"}
+    answer = f"[MOCK] Based on the context: {first_fact}" if len(shared_words) >= 2 else "[MOCK] I don't know"
     return {"answer": answer, "input_tokens": len(prompt.split()), "output_tokens": len(answer.split())}
 
 
